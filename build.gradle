@@ -76,19 +76,20 @@ jar {
     ext {
         if (project.hasProperty("rodeoBuild")) {
             libName = "types-lib"
-            libVersion = project.rodeoBuild.version
         } else {
             libName = rootProject.name
-            libVersion = project.version
         }
         projPath = "${project.group}.types".replaceAll("\\.", "/")
     }
     archivesBaseName = "$libName"
     archiveClassifier = null
-    archiveVersion = "$libVersion"
     metaInf {
         into (projPath) {
-            from rootProject.file("LICENSE")
+            if (project.hasProperty("rodeoBuild")) {
+                from project.file("LICENSE")
+            } else {
+                from rootProject.file("LICENSE")
+            }
         }
     }
     doFirst {
