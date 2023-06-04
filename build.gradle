@@ -1,0 +1,110 @@
+plugins {
+    id 'java-library'
+    id 'checkstyle'
+    id 'com.github.spotbugs' version '5.0.14'
+}
+
+// current version of the project
+version '0.0.0'
+group 'org.venatorlabs.rodeo'
+
+ext {
+    // Global project variables accessible from project.<VARIABLENAME>
+    checkstyleVersion = '10.7.0'
+    checkstyleCfgProjectPath = 'config/checkstyle/checkstyle.xml'
+    spotbugsExcludeCfgProjectPath = 'config/spotbugs/excludeFilter.xml'
+}
+
+repositories {
+    mavenCentral()
+}
+
+configurations {
+    compileClasspath.extendsFrom(annotationProcessor)
+}
+
+dependencies {
+    annotationProcessor 'com.github.spotbugs:spotbugs-annotations:4.7.3'
+}
+
+checkstyle {
+    println "configuring $project.archivesBaseName checkstyle@$project.checkstyleVersion"
+    toolVersion project.checkstyleVersion
+    // get back to project root & then to central configuration
+    configFile file(project.checkstyleCfgProjectPath)
+}
+
+checkstyleMain {
+    doFirst {
+        println "performing checkstyle on main directory in $project.archivesBaseName"
+        source = 'src/main/java/org'
+    }
+}
+
+compileJava {
+    doFirst {
+        println "compiling ${project.name}"
+    }
+    sourceCompatibility '11'
+    targetCompatibility '11'
+}
+
+java {
+    withSourcesJar()
+    withJavadocJar()
+}
+
+sourcesJar {
+    doFirst {
+        println "creating ${sourcesJar.archiveFile.getAsFile().get().getName()}"
+    }
+    doLast {
+        println "created sources @ ${sourcesJar.archiveFile.getAsFile().get()}"
+    }
+}
+
+javadocJar {
+    doFirst {
+        println "creating ${javadocJar.archiveFile.getAsFile().get().getName()}"
+    }
+    doLast {
+        println "created javadoc @ ${javadocJar.archiveFile.getAsFile().get()}"
+    }
+}
+
+jar {
+    ext {
+        if (project.hasProperty("rodeoBuild")) {
+            libName = "types-lib"
+            libVersion = project.rodeoBuild.version
+        } else {
+            libName = rootProject.name
+            libVersion = project.version
+        }
+        projPath = "${project.group}.types".replaceAll("\\.", "/")
+    }
+    archivesBaseName = "$libName"
+    archiveClassifier = null
+    archiveVersion = "$libVersion"
+    metaInf {
+        into (projPath) {
+            from rootProject.file("LICENSE")
+        }
+    }
+    doFirst {
+        println "creating ${jar.archiveFile.getAsFile().get().getName()}"
+    }
+    doLast {
+        println "created library @ ${jar.archiveFile.getAsFile().get()}"
+    }
+}
+
+spotbugs {
+    excludeFilter = file(project.spotbugsExcludeCfgProjectPath)
+}
+
+spotbugsMain {
+    doFirst {
+        println "verifying code with spotbugs"
+    }
+}
