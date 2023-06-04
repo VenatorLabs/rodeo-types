@@ -1,0 +1,43 @@
+#!/bin/sh
+# git-hook: post-checkout
+# --------------------------------------
+
+# shellcheck disable=SC2034
+LOG_PREFIX="[scripts/.git-hooks/post-checkout]"
+
+# shellcheck source=scripts/.git-hooks/hook-utils.sh
+. "$(dirname "$0")/hook-utils.sh"
+
+HEAD_PREV="$1"
+HEAD_NEW="$2"
+CKOUT_TYPE_FLAG="$3" # 0 = retrieve file from index, 1 = changing branches
+IS_CLONING=false
+
+# check if this is a post-checkout after a `git clone`
+if [ -z "$HEAD_PREV" ]; then
+    IS_CLONING=true
+fi
+
+env_cleanup() {
+    unset -v HEAD_PREV HEAD_NEW CKOUT_TYPE_FLAG IS_CLONING
+    unset -f env_cleanup
+    cleanup
+}
+
+# -----------------------------------------
+# main
+# -----------------------------------------
+# [0] ensure project git config is included (for git-lfs config options)
+config_git_project_gitconfig
+
+# [1] handle Git LFS (handles binary files because per line changes are not desired)
+if command -v git-lfs >/dev/null 2>&1; then
+    explicit_run_cmd "git lfs post-checkout $*"
+else
+    error "\nThis repository is configured for Git LFS but 'git-lfs' was not found on your path."
+    error "Please install to continue to use this repository!\n"
+    exit 2
+fi
+
+# env cleanup (vars, functions, utils)
+env_cleanup

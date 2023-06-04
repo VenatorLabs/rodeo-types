@@ -1,0 +1,75 @@
+#!/bin/sh
+# git-hook: pre-push
+# --------------------------------------
+
+[ -z "$LOG_PREFIX" ] && LOG_PREFIX="[scripts/.git-hooks/pre-push]"
+[ -z "$GIT_HOOK_OVERRIDE_PROTECTED_PUSH" ] && GIT_HOOK_OVERRIDE_PROTECTED_PUSH="false"
+
+# shellcheck source=scripts/.git-hooks/hook-utils.sh
+. "$(dirname "$0")/hook-utils.sh"
+
+# GIT HOOK ARGV
+# ------------------------
+remote_origin_name="$1"
+# remote_origin_location="$2"
+
+protect_important_branches() {
+    if ! current_branch="$(git symbolic-ref HEAD | sed -e 's,.*/\(.*\),\1,')"; then
+        error "Unable to detect current branch"
+        return 1
+    fi
+
+    allowed_push="false"
+    if ! tracked_branch="$(git rev-parse --abbrev-ref '@{upstream}')"; then
+        # branch is not currently tracking an upstream branch ref
+        tracked_branch="${remote_origin_name}/$current_branch"
+    fi
+
+    case "$tracked_branch" in
+    "${remote_origin_name}/main" | "${remote_origin_name}/master")
+        log "WARNING: Detected a push to the protected default branch!"
+        ;;
+    "${remote_origin_name}"/release/v*)
+        log "WARNING: Detected a push to a protected release branch!"
+        ;;
+    *)
+        allowed_push="true"
+        ;;
+    esac
+
+    if [ "$GIT_HOOK_OVERRIDE_PROTECTED_PUSH" = "true" ] || [ "$allowed_push" = "true" ]; then
+        return 0
+    fi
+
+    error "ERROR: unauthorized push target, please open a PR with the target branch."
+    error "If you believe this is incorrect, you can try again with the env variable"
+    error "GIT_HOOK_OVERRIDE_PROTECTED_PUSH set to true."
+    error "Continue at your own risk!"
+    return 1
+}
+
+env_cleanup() {
+    unset -v remote_origin_name current_branch tracked_branch allowed_push
+    unset -f env_cleanup deny_push_to_protected_branches
+    cleanup
+}
+
+# -----------------------------------------
+# main
+# -----------------------------------------
+# [1] validate push target
+if ! protect_important_branches; then
+    exit 1
+fi
+
+# [2] handle Git LFS (handles binary files because per line changes are not desired)
+if command -v git-lfs >/dev/null 2>&1; then
+    explicit_run_cmd "git lfs pre-push $*"
+else
+    error "\nThis repository is configured for Git LFS but 'git-lfs' was not found on your path."
+    error "Please install to continue to use this repository!\n"
+    exit 2
+fi
+
+# env cleanup
+env_cleanup

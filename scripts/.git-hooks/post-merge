@@ -1,0 +1,27 @@
+#!/bin/sh
+# --------------------------------------------
+
+[ -z "$LOG_PREFIX" ] && LOG_PREFIX="[scripts/.git-hooks/post-merge]"
+
+# shellcheck source=scripts/.git-hooks/hook-utils.sh
+. "$(dirname "$0")/hook-utils.sh"
+
+env_cleanup() {
+    unset -f env_cleanup
+    cleanup
+}
+
+# --------------------------------------------
+# main
+# --------------------------------------------
+# [0] handle Git LFS (handles binary files because per line changes are not desired)
+if command -v git-lfs >/dev/null 2>&1; then
+    explicit_run_cmd "git lfs post-merge $*"
+else
+    error "\nThis repository is configured for Git LFS but 'git-lfs' was not found on your path."
+    error "Please install to continue to use this repository!\n"
+    exit 2
+fi
+
+# [2] env cleanup (vars, functions, utils)
+env_cleanup
