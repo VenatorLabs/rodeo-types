@@ -1,0 +1,19 @@
+[alias]
+    s = status -s
+    graph = log --oneline --decorate --graph --all -20
+
+[commit]
+    gpgsign = true
+
+[lfs]
+	repositoryformatversion = 0
+
+[filter "lfs"]
+	clean = git-lfs clean -- %f
+	smudge = git-lfs smudge -- %f
+	process = git-lfs filter-process
+	required = true
+
+# ======================================= #
+# DO NOT ADD user.signingkey TO THIS FILE #
+# ======================================= #
