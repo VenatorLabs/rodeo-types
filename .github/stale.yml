@@ -1,0 +1,54 @@
+# Configuration for probot-stale                                                     #
+# CAO: https://github.com/probot/stale/tree/4232daafc73492864b559b55c9cf2689d19d5b23 #
+# ================================================================================== #
+# VenatorLabs rule summary
+# ---------------------------------------------------------------------------------- #
+#  Comment & mark 30-day old issues as stale
+#    Close stalled issues after 7 days
+#  Comment & mark 45-day old PR as stale
+#    Close stalled PRs after 10 days
+#  Any issue/pr with a planned milestone is exempt
+#  Issues with a confirmed label are exempt
+# ================================================================================== #
+# See repo url for descriptions of settings
+
+# ALL
+staleLabel: stale
+limitPerRun: 30 # numActions/hour
+
+
+issues:
+  daysUntilStale: 30
+  daysUntilClose: 7
+  exemptProjects: false
+  exemptMilestones: true
+  exemptAssignees: false
+  exemptLabels:
+    - confirmed
+  markComment: >
+    This issue is stale because it has been open 30 days with no recent activity.
+    It will be closed in 7 days, if no further activity occurs. Thank you for
+    your contributions.
+  unmarkComment: >
+    Thank you for the update and contribution! The stale label has been removed
+    and this issue will not be closed at this time.
+  closeComment: >
+    This issue was closed because activity was dormant for 37 days.
+
+
+pulls:
+  daysUntilStale: 45
+  daysUntilClose: 10
+  exemptProjects: false
+  exemptMilestones: true
+  exemptAssignees: false
+  exemptLabels: []
+  markComment: >
+    This PR is stale because it has been open 45 days with no recent activity.
+    It will be closed in 10 days, if no further activity occurs. Thank you for
+    your contributions.
+  unmarkComment: >
+    Thank you for the update and contribution! The stale label has been removed
+    and this PR will not be closed at this time.
+  closeComment: >
+    This PR was closed because activity was dormant for 55 days.

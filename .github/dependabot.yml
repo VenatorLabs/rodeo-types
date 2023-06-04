@@ -1,0 +1,42 @@
+# Dependabot configuration
+# REF: https://docs.github.com/en/code-security/dependabot/dependabot-version-updates/configuration-options-for-the-dependabot.yml-file
+version: 2
+updates:
+
+  # Maintain dependencies via gradle
+  - package-ecosystem: "gradle"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "saturday"
+      time: "19:00"
+      timezone: "America/Cancun"
+    labels:
+      - "triage"
+      - "deps"
+      - "rodeo-types"
+    rebase-strategy: "auto"
+    # Dependabot doesn't seem to support gradle for this option
+    # versioning-strategy: "auto"
+    commit-message:
+      prefix: "build"
+      include: "scope" # (deps)
+    # allow:
+    #   - dependency-type: "direct"
+    # ignore:
+    #   -
+
+
+  # Maintain dependencies for GitHub actions
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "monthly"
+    labels:
+      - "triage"
+      - "dev-deps"
+      - "ci"
+      - "rodeo-types"
+    commit-message:
+      prefix: "ci"
+      include: "scope" # (deps)
