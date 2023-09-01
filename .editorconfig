@@ -1,0 +1,44 @@
+[*]
+# also interpretted by prettier
+charset = utf-8
+end_of_line = lf
+insert_final_newline = true
+indent_style = space
+indent_size = 4
+max_line_length = 115 # prettier interprets as a "try-to" rule
+
+[*.md]
+max_line_length = 80 # prettier.printWidth
+
+[*.sh] # for shfmt
+indent_style = space
+indent_size = 4
+
+shell_variant      = posix # --language-dialect
+binary_next_line   = true
+switch_case_indent = true  # --case-indent
+space_redirects    = false
+keep_padding       = true
+function_next_line = false  # --func-next-line
+
+[config/debian/**]
+indent_style = space
+indent_size = 4
+switch_case_indent = true
+
+[scripts/.git-hooks/*]
+indent_style = space
+indent_size = 4
+
+[scripts/.git-hooks/_/*]
+ignore = true
+
+[node_modules/**]
+ignore = true
+# ignore all of node_modules
+
+[**/build/**]
+ignore = true
+
+[gradlew]
+ignore = true
