@@ -7,7 +7,7 @@
 
 package org.venatorlabs.rodeo.types;
 
-import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -16,5 +16,5 @@ import java.util.Map;
 public interface IQuery {
     public String[] getLabels();
 
-    public ArrayList<Map<String, Object>> getComparisons();
+    public List<Map<String, Object>> getComparisons();
 }
