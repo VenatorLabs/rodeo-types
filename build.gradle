@@ -1,3 +1,7 @@
+import java.nio.file.Files
+import java.nio.file.Paths
+import java.nio.file.StandardCopyOption
+
 plugins {
     id 'java-library'
     id 'checkstyle'
@@ -13,6 +17,7 @@ ext {
     checkstyleVersion = '10.7.0'
     checkstyleCfgProjectPath = 'config/checkstyle/checkstyle.xml'
     spotbugsExcludeCfgProjectPath = 'config/spotbugs/excludeFilter.xml'
+    rootDistDir = "${project.rootDir}/dist"
 }
 
 repositories {
@@ -97,6 +102,18 @@ jar {
     }
     doLast {
         println "created library @ ${jar.archiveFile.getAsFile().get()}"
+
+        // Lift up distributable into top level distribution folder
+        java.io.File outputJar = jar.archiveFile.getAsFile().get()
+        java.nio.file.Path distFilePath = Paths.get(project.rootDistDir, "${rootProject.name}-types-${project.version}.jar")
+        java.io.File distFile = distFilePath.toFile()
+        distFile.getParentFile().mkdirs()
+        Files.copy(
+            outputJar.toPath(),
+            distFile.toPath(),
+            StandardCopyOption.REPLACE_EXISTING
+        )
+        println "created distribution jar @ $distFilePath"
     }
 }
 
