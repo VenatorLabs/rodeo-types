@@ -16,5 +16,9 @@ import java.util.Map;
 public interface IQuery {
     public String[] getLabels();
 
+    public void setLabels(String[] labels);
+
     public List<Map<String, Object>> getComparisons();
+
+    public void setComparisons(List<Map<String, Object>> comparisons);
 }
