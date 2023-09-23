@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Venator Labs, Inc. All Rights Reserved.
+ * Copyright (c) 2023 Venator Labs, LLC. All Rights Reserved.
  * This code is licensed under the MIT License.
  *
  * For license terms, see LICENSE
